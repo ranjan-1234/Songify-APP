@@ -39,12 +39,7 @@ builder.Services.AddSwaggerGen();
 // Register EF Core + DbContext
 // ----------------------------
 builder.Services.AddDbContext<MyDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 36))
-    )
-);
-
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 34))));
 
 // Optional: Database helper singleton (if you need manual queries)
 builder.Services.AddSingleton<DatabaseHelper>();
