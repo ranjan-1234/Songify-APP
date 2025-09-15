@@ -4,10 +4,24 @@ using Singer.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Read connection string from appsettings.json
+// -------------------------------
+// 1️⃣ Read connection string
+// -------------------------------
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// CORS
+// Replace placeholder with environment variable (Render secret)
+var mysqlPassword = Environment.GetEnvironmentVariable("MYSQL_PASSWORD");
+if (string.IsNullOrEmpty(mysqlPassword))
+{
+    throw new Exception("MYSQL_PASSWORD environment variable is not set!");
+}
+
+// Replace placeholder {password_placeholder} in appsettings.json
+connectionString = connectionString.Replace("${MYSQL_PASSWORD}", mysqlPassword);
+
+// -------------------------------
+// 2️⃣ CORS configuration
+// -------------------------------
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
@@ -22,7 +36,9 @@ builder.Services.AddCors(options =>
         });
 });
 
-// Add services
+// -------------------------------
+// 3️⃣ Add services
+// -------------------------------
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
@@ -37,7 +53,9 @@ builder.Services.AddSingleton<DatabaseHelper>();
 
 var app = builder.Build();
 
-// Middleware
+// -------------------------------
+// 4️⃣ Middleware
+// -------------------------------
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
