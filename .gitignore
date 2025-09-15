@@ -1,0 +1,2 @@
+# Ignore appsettings containing secrets
+Singer/appsettings.Development.json
