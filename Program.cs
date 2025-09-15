@@ -1,48 +1,70 @@
-﻿using Singer.Helpers;
+﻿
+using Microsoft.EntityFrameworkCore;
+using Singer.Helpers;
+using Singer.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add CORS for React frontend
+// ----------------------------
+// Read connection string from appsettings.json
+// ----------------------------
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// ----------------------------
+// CORS: allow your React frontend
+// ----------------------------
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000") // React dev server
+            policy.WithOrigins(
+                    "https://my-spongify.netlify.app", // Netlify frontend
+                    "http://localhost:3000")           // optional: local dev
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
         });
 });
 
-// Add Controllers and HttpClient for API calls
+// ----------------------------
+// Add services
+// ----------------------------
 builder.Services.AddControllers();
-builder.Services.AddHttpClient();
-
-// Swagger for testing
+builder.Services.AddHttpClient();           // for API calls (Last.fm, etc.)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Optional: Database helper singleton
+// ----------------------------
+// Register EF Core + DbContext
+// ----------------------------
+builder.Services.AddDbContext<MyDbContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        new MySqlServerVersion(new Version(8, 0, 36))
+    )
+);
+
+
+// Optional: Database helper singleton (if you need manual queries)
 builder.Services.AddSingleton<DatabaseHelper>();
 
 var app = builder.Build();
 
-// Error handling and HSTS
+// ----------------------------
+// Middleware
+// ----------------------------
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
-// Redirect HTTP → HTTPS
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
-// Routing must come before UseCors and UseAuthorization
 app.UseRouting();
 
-// Swagger UI
+// Enable Swagger UI
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -50,16 +72,16 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = string.Empty; // Swagger at root
 });
 
-// CORS
+// Enable CORS for frontend
 app.UseCors("AllowReactApp");
 
 // Authorization middleware (even if not used now)
 app.UseAuthorization();
 
-// Map API controllers
+// Map controllers
 app.MapControllers();
 
-// MVC routing (optional for pages)
+// Optional MVC route for pages (if needed)
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Singer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+18ff9cc8881f8b5d04b26cdf0aaec222114461b6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+96cdb00009a8cdfb04669136f108778a30a78962")]
 [assembly: System.Reflection.AssemblyProductAttribute("Singer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Singer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

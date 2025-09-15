@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using Singer.Helpers;
 using System.Data;
 
@@ -16,8 +16,8 @@ public class SongApiController : ControllerBase
         _env = env;
     }
 
-    [HttpPost("Upload")] // endpoint: api/SongApi/Upload
-    [ApiExplorerSettings(IgnoreApi = true)] // Hide from Swagger
+    [HttpPost("Upload")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public IActionResult UploadSong([FromForm] IFormFile file, [FromForm] int userId)
     {
         if (file == null || file.Length == 0)
@@ -37,12 +37,12 @@ public class SongApiController : ControllerBase
         }
 
         string query = "INSERT INTO Songs (UserId, FileName, FilePath, UploadedAt) VALUES (@UserId, @FileName, @FilePath, @UploadedAt)";
-        _db.ExecuteNonQuery(query, new SqlParameter[]
+        _db.ExecuteNonQuery(query, new MySqlParameter[]
         {
-            new SqlParameter("@UserId", userId),
-            new SqlParameter("@FileName", file.FileName),
-            new SqlParameter("@FilePath", filePath),
-            new SqlParameter("@UploadedAt", DateTime.Now)
+            new MySqlParameter("@UserId", userId),
+            new MySqlParameter("@FileName", file.FileName),
+            new MySqlParameter("@FilePath", filePath),
+            new MySqlParameter("@UploadedAt", DateTime.Now)
         });
 
         return Ok("Song uploaded successfully!");
@@ -52,24 +52,24 @@ public class SongApiController : ControllerBase
     public IActionResult GetUserPlaylist(int userId)
     {
         string query = "SELECT SongId, FileName, FilePath, UploadedAt FROM Songs WHERE UserId=@UserId";
-        var dt = _db.ExecuteSelectQuery(query, new SqlParameter[] { new SqlParameter("@UserId", userId) });
+        var dt = _db.ExecuteSelectQuery(query, new MySqlParameter[] { new MySqlParameter("@UserId", userId) });
 
-        var songs = dt.AsEnumerable().Select(row => new {
+        var songs = dt.AsEnumerable().Select(row => new
+        {
             SongId = row.Field<int>("SongId"),
             FileName = row.Field<string>("FileName"),
             FilePath = row.Field<string>("FilePath"),
             UploadedAt = row.Field<DateTime>("UploadedAt")
         }).ToList();
 
-        return Ok(songs); // This will return proper JSON
+        return Ok(songs);
     }
-
 
     [HttpDelete("Delete/{songId}")]
     public IActionResult DeleteSong(int songId)
     {
         string selectQuery = "SELECT FilePath FROM Songs WHERE SongId=@SongId";
-        var dt = _db.ExecuteSelectQuery(selectQuery, new SqlParameter[] { new SqlParameter("@SongId", songId) });
+        var dt = _db.ExecuteSelectQuery(selectQuery, new MySqlParameter[] { new MySqlParameter("@SongId", songId) });
 
         if (dt.Rows.Count == 0)
             return NotFound("Song not found.");
@@ -79,7 +79,7 @@ public class SongApiController : ControllerBase
             System.IO.File.Delete(filePath);
 
         string deleteQuery = "DELETE FROM Songs WHERE SongId=@SongId";
-        _db.ExecuteNonQuery(deleteQuery, new SqlParameter[] { new SqlParameter("@SongId", songId) });
+        _db.ExecuteNonQuery(deleteQuery, new MySqlParameter[] { new MySqlParameter("@SongId", songId) });
 
         return Ok("Song deleted successfully!");
     }

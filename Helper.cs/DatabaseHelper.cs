@@ -1,6 +1,5 @@
-﻿using System.Data;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
+﻿using MySql.Data.MySqlClient;
+using System.Data;
 
 namespace Singer.Helpers
 {
@@ -10,33 +9,31 @@ namespace Singer.Helpers
 
         public DatabaseHelper(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _connectionString = configuration.GetConnectionString("DefaultConnection")!;
         }
-        
-        // ✅ For INSERT, UPDATE, DELETE
-        public int ExecuteNonQuery(string query, SqlParameter[] parameters)
+
+        public DataTable ExecuteSelectQuery(string query, MySqlParameter[] parameters)
         {
-            using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand(query, con);
+            using var conn = new MySqlConnection(_connectionString);
+            using var cmd = new MySqlCommand(query, conn);
             if (parameters != null)
                 cmd.Parameters.AddRange(parameters);
-            con.Open();
-            return cmd.ExecuteNonQuery();
-        }
 
-
-
-        // ✅ For SELECT queries
-        public DataTable ExecuteSelectQuery(string query, SqlParameter[] parameters)
-        {
+            using var adapter = new MySqlDataAdapter(cmd);
             var dt = new DataTable();
-            using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand(query, con);
+            adapter.Fill(dt);
+            return dt;
+        }
+
+        public int ExecuteNonQuery(string query, MySqlParameter[] parameters)
+        {
+            using var conn = new MySqlConnection(_connectionString);
+            using var cmd = new MySqlCommand(query, conn);
             if (parameters != null)
                 cmd.Parameters.AddRange(parameters);
-            using var da = new SqlDataAdapter(cmd);
-            da.Fill(dt);
-            return dt;
+
+            conn.Open();
+            return cmd.ExecuteNonQuery();
         }
     }
 }
