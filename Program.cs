@@ -1,54 +1,43 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Singer.Helpers;
 using Singer.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ----------------------------
 // Read connection string from appsettings.json
-// ----------------------------
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// ----------------------------
-// CORS: allow your React frontend
-// ----------------------------
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
         policy =>
         {
             policy.WithOrigins(
-                    "https://my-spongify.netlify.app", // Netlify frontend
-                    "http://localhost:3000")           // optional: local dev
+                    "https://my-spongify.netlify.app",
+                    "http://localhost:3000")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
         });
 });
 
-// ----------------------------
 // Add services
-// ----------------------------
 builder.Services.AddControllers();
-builder.Services.AddHttpClient();           // for API calls (Last.fm, etc.)
+builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// ----------------------------
 // Register EF Core + DbContext
-// ----------------------------
 builder.Services.AddDbContext<MyDbContext>(options =>
     options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 34))));
 
-// Optional: Database helper singleton (if you need manual queries)
+// Optional: Database helper singleton
 builder.Services.AddSingleton<DatabaseHelper>();
 
 var app = builder.Build();
 
-// ----------------------------
 // Middleware
-// ----------------------------
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -59,24 +48,22 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-// Enable Swagger UI
+// Swagger
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Singer API V1");
-    c.RoutePrefix = string.Empty; // Swagger at root
+    c.RoutePrefix = string.Empty;
 });
 
-// Enable CORS for frontend
+// CORS
 app.UseCors("AllowReactApp");
 
-// Authorization middleware (even if not used now)
+// Authorization
 app.UseAuthorization();
 
 // Map controllers
 app.MapControllers();
-
-// Optional MVC route for pages (if needed)
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
