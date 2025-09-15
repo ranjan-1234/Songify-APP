@@ -1,0 +1,86 @@
+[
+  {
+    "ContainingType": "Singer.Controllers.AccountApiController",
+    "Method": "Login",
+    "RelativePath": "api/AccountApi/Login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "input",
+        "Type": "Singer.Models.LoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Singer.Controllers.AccountApiController",
+    "Method": "Register",
+    "RelativePath": "api/AccountApi/Register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "input",
+        "Type": "Singer.Models.RegisterRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SongApiController",
+    "Method": "DeleteSong",
+    "RelativePath": "api/SongApi/Delete/{songId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "songId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SongApiController",
+    "Method": "GetUserPlaylist",
+    "RelativePath": "api/SongApi/Playlist/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Singer.Controllers.TopSingersController",
+    "Method": "GetTopSingers",
+    "RelativePath": "api/TopSingers",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Singer.Controllers.TopSongsController",
+    "Method": "GetTopSongs",
+    "RelativePath": "api/TopSongs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]
