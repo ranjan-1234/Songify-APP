@@ -1,17 +1,16 @@
-# Use official .NET SDK image to build
+# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy project files and restore
-COPY Singer/Singer/*.csproj Singer/Singer/
-RUN dotnet restore Singer/Singer/Singer.csproj
+# Copy csproj and restore dependencies
+COPY *.csproj ./
+RUN dotnet restore
 
-# Copy everything else
-COPY . .
-WORKDIR /src/Singer/Singer
+# Copy everything else and build
+COPY . ./
 RUN dotnet publish -c Release -o /app/out
 
-# Final runtime image
+# Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/out .
