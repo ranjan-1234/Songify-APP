@@ -37,7 +37,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins(
-                    "https://my-spongify.netlify.app",
+                    "https://vocalcode.netlify.app",
                     "http://localhost:3000")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
