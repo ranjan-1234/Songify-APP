@@ -1,5 +1,6 @@
 ﻿using CsvHelper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
 using System.Globalization;
 using Singer.Models;
 
@@ -9,12 +10,20 @@ namespace Singer.Controllers
     [Route("api/[controller]")]
     public class TopSongsController : ControllerBase
     {
+        private readonly IWebHostEnvironment _env;
+
+        public TopSongsController(IWebHostEnvironment env)
+        {
+            _env = env;
+        }
+
         [HttpGet]
         public IActionResult GetTopSongs()
         {
+            // Path inside wwwroot/data
             var csvFile = Path.Combine(
-                Environment.CurrentDirectory,
-                "Indian_Songs",
+                _env.WebRootPath,   // wwwroot folder
+                "data",
                 "indian_songs_spotify.csv"
             );
 
