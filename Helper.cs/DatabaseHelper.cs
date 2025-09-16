@@ -1,4 +1,4 @@
-﻿using MySql.Data.MySqlClient;
+using MySql.Data.MySqlClient;
 using System.Data;
 
 namespace Singer.Helpers
@@ -9,7 +9,15 @@ namespace Singer.Helpers
 
         public DatabaseHelper(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection")!;
+            var rawConnectionString = configuration.GetConnectionString("DefaultConnection")!;
+
+            // Get password from Render environment
+            var mysqlPassword = Environment.GetEnvironmentVariable("MYSQL_PASSWORD");
+            if (string.IsNullOrEmpty(mysqlPassword))
+                throw new Exception("MYSQL_PASSWORD environment variable is not set.");
+
+            // Replace placeholder
+            _connectionString = rawConnectionString.Replace("${MYSQL_PASSWORD}", mysqlPassword);
         }
 
         public DataTable ExecuteSelectQuery(string query, MySqlParameter[] parameters)
@@ -21,7 +29,7 @@ namespace Singer.Helpers
 
             using var adapter = new MySqlDataAdapter(cmd);
             var dt = new DataTable();
-            adapter.Fill(dt);
+            adapter.Fill(dt); // This was failing before
             return dt;
         }
 
